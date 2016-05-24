@@ -1,0 +1,108 @@
+{
+	"jpsType": "install",
+	"jpsVersion": "0.3",
+	"application": {
+		"id": "owncloud",
+		"name": "ownCloud",
+		"version": "8.1.1",
+		"type": "php",
+		"categories": [
+				"apps/file-management",
+				"apps/popular", "apps/file-manager"
+		],
+		"homepage": "https://owncloud.org/",
+		"logo": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/images/ownCloud.png",
+		"description": {
+			"en": "ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.",
+			"ru": "ownCloud преставляет собой открытое и бесплатное облочное хранение файлов. Оно может быть легко использован для обмена данными и синхронизации, а также просто для хранения документов."
+		},
+		"env": {
+			"topology": {
+				"engine": "php5.5",
+				"nodes": [{
+						"extip": false,
+						"count": 1,
+						"cloudlets": 16,
+						"nodeType": "apache2"
+					}, {
+						"extip": false,
+						"count": 1,
+						"cloudlets": 16,
+						"nodeType": "mysql5"
+					}
+				],
+				"ssl": false,
+				"ha": false
+			},
+			"deployments": [{
+					"archive": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/dumps/owncloud.zip",
+					"name": "owncloud-8.1.1.zip",
+					"context": "ROOT"
+				}
+			],
+			"configs": [{
+					"nodeType": "mysql5",
+					"database": {
+						"name": "owncloud",
+						"user": "owncloud",
+						"dump": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/dumps/owncloud.sql"
+					}
+				}, {
+					"nodeType": "apache2",
+					"path": "/var/www/webroot/ROOT/config/autoconfig.php",
+					"replacements": [{
+							"replacement": "${nodes.mysql5.address}",
+							"pattern": "{DB_HOST}"
+						}, {
+							"replacement": "${nodes.mysql5.database.user}",
+							"pattern": "{DB_USER}"
+						}, {
+							"replacement": "admin",
+							"pattern": "{ADMIN_NAME}"
+						}, {
+							"replacement": "${nodes.mysql5.database.name}",
+							"pattern": "{DB_NAME}"
+						}, {
+							"replacement": "${nodes.mysql5.database.password}",
+							"pattern": "{DB_PASSWORD}"
+						}, {
+							"replacement": "${user.appPassword}",
+							"pattern": "{ADMIN_PASSWORD}"
+						}
+					]
+				}, {
+					"nodeType": "apache2",
+					"path": "/etc/php.ini",
+					"replacements": [{
+							"replacement": "post_max_size = 256M",
+							"pattern": "post_max_size = 8M"
+						}, {
+							"replacement": "upload_max_filesize = 256M",
+							"pattern": "upload_max_filesize = 2M"
+						}, {
+							"replacement": "max_execution_time = 300",
+							"pattern": "max_execution_time = 30"
+						}, {
+							"pattern": ";extension=gd.so",
+							"replacement": "extension=gd.so"
+						}, {
+							"pattern": "cgi.fix_pathinfo=0",
+							"replacement": "cgi.fix_pathinfo=1"
+						}, {
+							"pattern": ";extension=gd.so",
+							"replacement": "extension=gd.so"
+						}, {
+							"pattern": ".*extension=mysql.so",
+							"replacement": "extension=mysql.so"
+						}
+					],
+					"restart": true
+				}
+			]
+		},
+		"success": {
+			"en": "Below you will find your admin panel link, username and password.</br></br> <table style='font-size:13px; border: none;'><tr><td>Admin panel URL:</td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/' target='_blank'>${env.protocol}://${env.domain}/</a></td></tr>  <tr><td>Admin name:</td><td style='padding-left: 10px;'>admin</td></tr><tr><td>Password:</td><td style='padding-left: 10px;'>${user.appPassword}</td></tr></table></br>To add custom domain name for your ownCloud installation follow the steps described in our <a href='http://docs.jelastic.com/custom-domains' target='_blank'>documentation</a>",
+			"ru": "Ниже выс можете найти вашу ссылку на админ панель, имя и пароль.</br></br> <table style='font-size:13px; border: none;'><tr><td>Админ панель URL:</td><td style='padding-left: 10px;'><a href='${env.protocol}://${env.domain}/' target='_blank'>${env.protocol}://${env.domain}/</a></td></tr>  <tr><td>Имя:</td><td style='padding-left: 10px;'>admin</td></tr><tr><td>Пароль:</td><td style='padding-left: 10px;'>${user.appPassword}</td></tr></table></br>Для того чтобы добавить пользовательский домен перейдите по ссылке описанной в нашей <a href='http://docs.jelastic.com/custom-domains' target='_blank'>документации</a>"
+		}
+	}
+}
