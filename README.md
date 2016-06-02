@@ -1,7 +1,6 @@
 # Jelastic ownCloud Add-on
 
 This repository provides [ownCloud](https://owncloud.org/) add-on for Jelastic Platform.
-[![GET IT HOSTED](https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/images/getithosted.png)](http://go.jelastic.com/test?hoster-select=1&theme=modern&app=https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/ownCloud-8.1.1.json)
 
 **ownCloud** represents an open source and free file cloud storage.
 
