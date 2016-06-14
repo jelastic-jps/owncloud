@@ -11,7 +11,7 @@
 				"apps/popular", "apps/file-manager"
 		],
 		"homepage": "https://owncloud.org/",
-		"logo": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/images/ownCloud.png",
+		"logo": "https://raw.githubusercontent.com/jelastic-jps/ownCloud/master/images/ownCloud.png",
 		"description": {
 			"en": "ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.",
 			"ru": "ownCloud преставляет собой открытое и бесплатное облочное хранение файлов. Оно может быть легко использован для обмена данными и синхронизации, а также просто для хранения документов."
@@ -35,7 +35,7 @@
 				"ha": false
 			},
 			"deployments": [{
-					"archive": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/dumps/owncloud.zip",
+					"archive": "https://raw.githubusercontent.com/jelastic-jps/ownCloud/master/dumps/owncloud.zip",
 					"name": "owncloud-8.1.1.zip",
 					"context": "ROOT"
 				}
@@ -45,7 +45,7 @@
 					"database": {
 						"name": "owncloud",
 						"user": "owncloud",
-						"dump": "https://raw.githubusercontent.com/JelasticJPS/ownCloud/master/dumps/owncloud.sql"
+						"dump": "https://raw.githubusercontent.com/jelastic-jps/ownCloud/master/dumps/owncloud.sql"
 					}
 				}, {
 					"nodeType": "apache2",
