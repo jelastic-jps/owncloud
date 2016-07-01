@@ -8,7 +8,7 @@ This package is designed to deploy ownCloud environment which represents an open
 
 ### Environment Topology
 
-![Joomla Topology](https://docs.google.com/drawings/d/19T3KJJxPbbol-cn7KlYQLIks6FjgzhP_aQfzt43E8Rw/pub?w=505&h=216)
+![ownCloud Topology](https://docs.google.com/drawings/d/19T3KJJxPbbol-cn7KlYQLIks6FjgzhP_aQfzt43E8Rw/pub?w=505&h=216)
 
 ### Specifics
 
