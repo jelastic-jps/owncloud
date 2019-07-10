@@ -2,7 +2,7 @@ type: install
 jpsVersion: '0.3'
 id: owncloud
 name: ownCloud
-version: '10.0.6'
+version: '10.2.1'
 categories:
   - apps/file-management
   - apps/popular
@@ -20,8 +20,8 @@ nodes:
     nodeType: mysql5
 onInstall:
   - deploy:
-      archive: https://raw.githubusercontent.com/jelastic-jps/owncloud/master/dumps/owncloud.zip
-      name: owncloud-10.0.6.zip
+      archive: https://download.owncloud.org/community/owncloud-10.2.1.zip
+      name: owncloud-10.2.1.zip
       context: ROOT
   - prepareSqlDatabase:
     - nodeType: mysql5
@@ -32,22 +32,8 @@ onInstall:
       newDatabaseUser:
         name: owncloud
         password: ${globals.PASSWD}
+  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql5.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
   - replaceInFile:
-    - path: /var/www/webroot/ROOT/config/autoconfig.php
-      nodeType: apache2
-      replacements:
-      - replacement: ${nodes.mysql5.address}
-        pattern: "{DB_HOST}"
-      - replacement: owncloud
-        pattern: "{DB_USER}"
-      - replacement: admin
-        pattern: "{ADMIN_NAME}"
-      - replacement: owncloud
-        pattern: "{DB_NAME}"
-      - replacement: ${globals.PASSWD}
-        pattern: "{DB_PASSWORD}"
-      - replacement: ${user.appPassword}
-        pattern: "{ADMIN_PASSWORD}"
     - path: /etc/php.ini
       nodeType: apache2
       replacements:
