@@ -12,7 +12,7 @@ globals:
 homepage: https://owncloud.org/
 logo: https://download.jelastic.com/public.php?service=files&t=030e772c06b1880603b1cdba4c83a4a4&download
 description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
-engine: 'php7.1'
+engine: php7.2
 nodes:
   - cloudlets: 8
     nodeType: apache2
