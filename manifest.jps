@@ -1,5 +1,6 @@
 type: install
 id: owncloud
+version: 1.7
 name: ownCloud
 categories:
   - apps/file-management
