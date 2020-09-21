@@ -19,8 +19,8 @@ nodes:
     nodeType: mysql5
 onInstall:
   - deploy:
-      archive: https://download.owncloud.org/community/owncloud-10.3.2.zip
-      name: owncloud-10.2.1.zip
+      archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
+      name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
   - prepareSqlDatabase:
     - nodeType: mysql5
