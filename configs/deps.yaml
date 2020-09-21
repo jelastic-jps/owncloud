@@ -1,3 +1,12 @@
 tags:
   apachephp:
+    apachephp:
+      digest: sha256:738db137a9d3cecc3c147c1d6a3455953a15e63568d3477f7182d2d2695fdb79
+      version: 2.4.46-php-7.4.10
   mysql:
+    mysql5:
+      digest: sha256:bbbaee267da03f86084d5543c00c43b4c7aa8b890629a12a62ab8521c3d70e70
+      version: 5.7.31
+    mysql8:
+      digest: sha256:571f4b4457d8a736e3e292e299248048e19b32620524cd49f5ff9bbef27b205a
+      version: 8.0.21
