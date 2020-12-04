@@ -2,15 +2,22 @@ type: install
 id: owncloud
 version: 1.7
 name: ownCloud
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master/
+
 categories:
   - apps/file-management
   - apps/popular
   - apps/file-manager
+
+mixins:
+  - configs/vers.yaml
+
 globals:
   PASSWD: ${fn.password}
 homepage: https://owncloud.org/
-logo: https://download.jelastic.com/public.php?service=files&t=030e772c06b1880603b1cdba4c83a4a4&download
+logo: images/ownCloud.png
 description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
+
 engine: php7.3
 nodes:
   - cloudlets: 8
@@ -19,8 +26,8 @@ nodes:
     nodeType: mysql5
 onInstall:
   - deploy:
-      archive: https://download.owncloud.org/community/owncloud-10.3.2.zip
-      name: owncloud-10.2.1.zip
+      archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
+      name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
   - prepareSqlDatabase:
     - nodeType: mysql5
