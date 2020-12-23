@@ -18,10 +18,10 @@ homepage: https://owncloud.org/
 logo: images/ownCloud.png
 description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
 
-engine: php7.3
 nodes:
   - cloudlets: 8
     nodeType: apache2
+    engine: php7.4
   - cloudlets: 8
     nodeType: mysql5
 onInstall:
