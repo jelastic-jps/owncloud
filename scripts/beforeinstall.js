@@ -1,7 +1,7 @@
 var resp = {
   result: 0,
   ssl: true,
-  engine: php7.4,
+  engine: "php7.4",
   nodes: []
 }
 
@@ -51,7 +51,7 @@ resp.nodes.push({
 
 if (${settings.litespeed:false}) {
   resp.nodes.push({
-    nodeType: "litespeedphp",
+    nodeType: "litespeedphp:latest",
     count: 1,
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -63,7 +63,7 @@ if (${settings.litespeed:false}) {
   })
 } else {
   resp.nodes.push({
-    nodeType: "nginxphp",
+    nodeType: "nginxphp:latest",
     count: 1,
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
