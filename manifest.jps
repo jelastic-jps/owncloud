@@ -2,7 +2,10 @@ type: install
 id: owncloud
 version: 1.7
 name: ownCloud
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master/
+baseUrl: https://raw.githubusercontent.com/panslothda/owncloud/master
+homepage: https://owncloud.org/
+logo: images/ownCloud.png
+description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
 
 categories:
   - apps/file-management
@@ -12,36 +15,70 @@ categories:
 mixins:
   - configs/vers.yaml
 
+onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
+
+skipNodeEmails: true
+nodes: definedInOnBeforeInstall
+
+settings:
+  fields:
+    - name: litespeed
+      type: checkbox
+      caption: Install LiteSpeed High-Performance Web Server 
+      value: true
+      tooltip: "If this option is disabled, the service will be installed using NGINX application server"
+    - pack: ''
+      align: ''
+      defaultPadding: 1
+      defaultFlex: 0
+      caption: Compositefield
+      type: compositefield
+      name: compositefield
+      hideLabel: true
+      hidden: false
+    - name: ded-storage
+      type: checkbox
+      caption: Add a dedicated storage Node
+      value: true
+      tooltip: "If this option is disabled, the storage of the NGINX node will be used for all files"
+      showIf:
+        true:
+          - caption: Clustered storage for high availability and more storage
+            type: checkbox
+            name: clustered-storage
+            value: false
+            tooltip: "If this option is activated, the storage node will be made as a clustered version"
+
+        false:
+          - caption: Clustered storage for high availability and more storage
+            type: checkbox
+            name: clustered-storage
+            value: false
+            disabled: true
+            tooltip: "If this option is activated, the storage node will be made as a clustered version" 
+
 globals:
   PASSWD: ${fn.password}
-homepage: https://owncloud.org/
-logo: images/ownCloud.png
-description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
 
-nodes:
-  - cloudlets: 8
-    nodeType: apache2
-    engine: php7.4
-  - cloudlets: 8
-    nodeType: mysql5
+
 onInstall:
   - deploy:
       archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
   - prepareSqlDatabase:
-    - nodeType: mysql5
+    - nodeType: mariadb10
       loginCredentials:
         user: root
-        password: ${nodes.mysql5.password}
+        password: ${nodes.mariadb10.password}
       newDatabaseName: owncloud
       newDatabaseUser:
         name: owncloud
         password: ${globals.PASSWD}
-  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql5.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
+  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mariadb10.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
   - replaceInFile:
     - path: /etc/php.ini
-      nodeType: apache2
+      nodeGroup: cp
       replacements:
       - replacement: post_max_size = 256M
         pattern: post_max_size = 8M
@@ -55,15 +92,7 @@ onInstall:
         replacement: extension=intl.so
       - pattern: cgi.fix_pathinfo=0
         replacement: cgi.fix_pathinfo=1
-  - restartNode:
-      nodeType: apache2
 
-success: |
-  Below you will find your admin panel link, username and password.  
-  
-  
-  Admin panel URL: [${env.protocol}://${env.domain}/](${env.protocol}://${env.domain}/)  
-  Admin name: admin  
-  Password: ${user.appPassword}  
-  
-  To add custom domain name for your ownCloud installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains)
+success:
+  email: /text/success-text.md
+  text: /text/success-text.md

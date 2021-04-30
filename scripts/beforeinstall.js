@@ -1,11 +1,23 @@
 var resp = {
   result: 0,
-  ssl: !!jelastic.billing.account.GetQuotas('environment.jelasticssl.enabled').array[0].value,
+  ssl: true,
   nodes: []
 }
 
-
-if ('${settings.clustered-storage}' == 'true') {
+if (${settings.ded-storage:false}) {
+  resp.nodes.push({
+    nodeType: "storage",
+    count: 1,
+    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
+    fixedCloudlets: ${settings.st_fixedCloudlets:1},
+    nodeGroup: "storage",
+    isRedeploySupport: false,
+    validation: {
+      minCount: 1,
+      maxCount: 1
+    }
+  })
+} else if (${settings.clustered-storage:false}) {
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
@@ -20,19 +32,6 @@ if ('${settings.clustered-storage}' == 'true') {
       maxCount: 3
     }
   })
-} else if ('${settings.ded-storage}' == 'true'){
-  resp.nodes.push({
-    nodeType: "storage",
-    count: 1,
-    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.st_fixedCloudlets:1},
-    nodeGroup: "storage",
-    isRedeploySupport: false,
-    validation: {
-      minCount: 1,
-      maxCount: 1
-    }
-  })
 }
 
 resp.nodes.push({
@@ -45,17 +44,20 @@ resp.nodes.push({
   validation: {
     minCount: 1,
     maxCount: 1
-  }
-  }  
-});
+    }
+})
 
-if ('${settings.litespeed}'== 'true') {
+if (${settings.litespeed:false}) {
   resp.nodes.push({
     nodeType: "litespeedphp",
     count: 1,
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
-    nodeGroup: "cp"
+    nodeGroup: "cp",
+    env: {
+      SERVER_WEBROOT: "/var/www/webroot/ROOT",
+      REDIS_ENABLED: "true"
+    }
   })
 } else {
   resp.nodes.push({
@@ -63,7 +65,11 @@ if ('${settings.litespeed}'== 'true') {
     count: 1,
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
-    nodeGroup: "cp"
+    nodeGroup: "cp",
+    env: {
+      SERVER_WEBROOT: "/var/www/webroot/ROOT",
+      REDIS_ENABLED: "true"
+    }
   })
 }
 
