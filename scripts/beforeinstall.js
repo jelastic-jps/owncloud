@@ -4,20 +4,7 @@ var resp = {
   nodes: []
 }
 
-if (${settings.ded-storage:false}) {
-  resp.nodes.push({
-    nodeType: "storage",
-    count: 1,
-    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
-    fixedCloudlets: ${settings.st_fixedCloudlets:1},
-    nodeGroup: "storage",
-    isRedeploySupport: false,
-    validation: {
-      minCount: 1,
-      maxCount: 1
-    }
-  })
-} else if (${settings.clustered-storage:false}) {
+if (${settings.clustered-storage:false}) {   
   resp.nodes.push({
     nodeType: "storage",
     count: 3,
@@ -32,8 +19,22 @@ if (${settings.ded-storage:false}) {
       maxCount: 3
     }
   })
+} else {
+  if (${settings.ded-storage:false}) {
+  resp.nodes.push({
+    nodeType: "storage",
+    count: 1,
+    flexibleCloudlets: ${settings.st_flexibleCloudlets:8},
+    fixedCloudlets: ${settings.st_fixedCloudlets:1},
+    nodeGroup: "storage",
+    isRedeploySupport: false,
+    validation: {
+      minCount: 1,
+      maxCount: 1
+    }
+  })
 }
-
+}
 resp.nodes.push({
   nodeType: "mariadb-dockerized",
   flexibleCloudlets: ${settings.db_flexibleCloudlets:16},
