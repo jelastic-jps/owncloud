@@ -62,36 +62,48 @@ globals:
 
 
 onInstall:
-  - deploy:
+  - deployApp
+  - set-sql-settings
+  - set-php-settings
+
+actions:
+  deployApp:
+    deploy:  
       archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
-  - prepareSqlDatabase:
-    - nodeType: mariadb10
-      loginCredentials:
-        user: root
-        password: ${nodes.mariadb10.password}
-      newDatabaseName: owncloud
-      newDatabaseUser:
-        name: owncloud
-        password: ${globals.PASSWD}
-  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mariadb10.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
-  - replaceInFile:
-    - path: /etc/php.ini
+
+  set-sql-settings:
+    prepareSqlDatabase:
+      - nodeType: mariadb10
+        loginCredentials:
+          user: root
+          password: "${nodes.sqldb.password}"
+        newDatabaseName: owncloud
+        newDatabaseUser:
+          name: owncloud
+          password: "${user.appPassword}"
+    cmd [mariadb10]: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on *.* to 'owncloud'@'%'"
+
+  set-php-settings:        
+    cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${user.appPassword}",\n		"dbhost"	=> "${nodes.sqldb.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
+   
+    replaceInFile:
       nodeGroup: cp
+      path: /etc/php.ini
       replacements:
-      - replacement: post_max_size = 256M
-        pattern: post_max_size = 8M
-      - replacement: upload_max_filesize = 256M
-        pattern: upload_max_filesize = 2M
-      - replacement: max_execution_time = 300
-        pattern: max_execution_time = 30
-      - pattern: ";extension=gd.so"
-        replacement: extension=gd.so
-      - pattern: ";extension=intl.so"
-        replacement: extension=intl.so
-      - pattern: cgi.fix_pathinfo=0
-        replacement: cgi.fix_pathinfo=1
+        - replacement: post_max_size = 256M
+          pattern: post_max_size = 8M
+        - replacement: upload_max_filesize = 256M
+          pattern: upload_max_filesize = 2M
+        - replacement: max_execution_time = 300
+          pattern: max_execution_time = 30
+        - pattern: ";extension=gd.so"
+          replacement: extension=gd.so
+        - pattern: ";extension=intl.so"
+          replacement: extension=intl.so
+        - pattern: cgi.fix_pathinfo=0
+          replacement: cgi.fix_pathinfo=1
 
 success:
   email: /text/success-text.md
