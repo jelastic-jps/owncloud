@@ -25,7 +25,7 @@ settings:
       type: checkbox
       caption: Install LiteSpeed High-Performance Web Server 
       value: true
-      tooltip: "If this option is disabled, the service will be installed using NGINX application server"
+      tooltip: "If this option is disabled, the service will be installed using Apache application server"
     - pack: ''
       align: ''
       defaultPadding: 1
@@ -39,7 +39,7 @@ settings:
       type: checkbox
       caption: Add a dedicated storage Node
       value: true
-      tooltip: "If this option is disabled, the storage of the NGINX node will be used for all files"
+      tooltip: "If this option is disabled, the storage of the Apache node will be used for all files"
       showIf:
         true:
           - caption: Clustered storage for high availability and more storage

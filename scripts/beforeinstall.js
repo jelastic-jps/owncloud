@@ -42,7 +42,7 @@ if (${settings.clustered-storage:false}) {
     })
     } else {
     resp.nodes.push({    
-      nodeType: "nginxphp",
+      nodeType: "apache2",
       count: 1,
       flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},                  
       fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -109,7 +109,7 @@ if (${settings.ded-storage:false}) {
     })
   } else {
     resp.nodes.push({    
-      nodeType: "nginxphp",
+      nodeType: "apache2",
       count: 1,
       flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},                  
       fixedCloudlets: ${settings.cp_fixedCloudlets:1},
@@ -171,7 +171,7 @@ if (!${settings.ded-storage:false}) {
   })
   } else {
   resp.nodes.push({
-    nodeType: "nginxphp",
+    nodeType: "apache2",
     count: 1,
     flexibleCloudlets: ${settings.cp_flexibleCloudlets:16},                  
     fixedCloudlets: ${settings.cp_fixedCloudlets:1},
