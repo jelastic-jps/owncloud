@@ -18,14 +18,7 @@ if (${settings.clustered-storage:false}) {
       env: {
         SERVER_WEBROOT: "/var/www/webroot/ROOT",
         REDIS_ENABLED: "true"
-      },
-      volumeMounts: {
-        "/var/www/webroot/ROOT": {
-          readOnly: "false",
-          sourcePath: "/data/ROOT",
-          sourceNodeGroup: "storage"
-          }
-        }  
+      } 
       }, {
       nodeType: "storage",
       count: 3,
@@ -50,14 +43,7 @@ if (${settings.clustered-storage:false}) {
       env: {
         SERVER_WEBROOT: "/var/www/webroot/ROOT",
         REDIS_ENABLED: "true"
-      },
-      volumeMounts: {
-        "/var/www/webroot/ROOT": {
-          readOnly: "false",
-          sourcePath: "/data/ROOT",
-          sourceNodeGroup: "storage"
-          }
-        }  
+      }  
       }, {
       nodeType: "storage",
       count: 3,
