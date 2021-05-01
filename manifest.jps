@@ -1,6 +1,5 @@
 type: install
 id: owncloud
-version: 1.7
 name: ownCloud
 baseUrl: https://raw.githubusercontent.com/panslothda/owncloud/master
 homepage: https://owncloud.org/
@@ -57,14 +56,11 @@ settings:
             disabled: true
             tooltip: "If this option is activated, the storage node will be made as a clustered version" 
 
-globals:
-  PASSWD: ${fn.password}
-
-
 onInstall:
   - deployApp
-  - set-sql-settings
-  - set-php-settings
+  - set-SQL-settings
+  - set-PHP-settings
+  - restart
 
 actions:
   deployApp:
@@ -73,37 +69,51 @@ actions:
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
 
-  set-sql-settings:
-    prepareSqlDatabase:
-      - nodeType: mariadb10
-        loginCredentials:
-          user: root
-          password: "${nodes.sqldb.password}"
-        newDatabaseName: owncloud
-        newDatabaseUser:
-          name: owncloud
-          password: "${user.appPassword}"
-    cmd [mariadb10]: mysql -u root -p${nodes.sqldb.password} -e "grant all privileges on *.* to 'owncloud'@'%'"
+  set-SQL-settings:
+    - prepareSqlDatabase:
+        - nodeType: sqldb
+          loginCredentials:
+            user: root
+            password: "${nodes.sqldb.password}"
+          newDatabaseName: owncloud
+          newDatabaseUser:
+            name: owncloud
+            password: "${user.appPassword}"
 
-  set-php-settings:        
-    cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${user.appPassword}",\n		"dbhost"	=> "${nodes.sqldb.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
-   
-    replaceInFile:
-      nodeGroup: cp
-      path: /etc/php.ini
-      replacements:
-        - replacement: post_max_size = 256M
-          pattern: post_max_size = 8M
-        - replacement: upload_max_filesize = 256M
-          pattern: upload_max_filesize = 2M
-        - replacement: max_execution_time = 300
-          pattern: max_execution_time = 30
-        - pattern: ";extension=gd.so"
-          replacement: extension=gd.so
-        - pattern: ";extension=intl.so"
-          replacement: extension=intl.so
-        - pattern: cgi.fix_pathinfo=0
-          replacement: cgi.fix_pathinfo=1
+  set-PHP-settings:        
+    - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${user.appPassword}",\n		"dbhost"	=> "${nodes.sqldb.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
+    - if ('${settings.litespeed}' == 'true'):
+        replaceInFile:
+          nodeType: cp
+          path: /usr/local/lsws/lsphp/etc/php.ini
+          replacements:
+            - pattern: post_max_size = 8M
+              replacement: post_max_size = 1024M
+            - pattern: upload_max_filesize = 2M
+              replacement: upload_max_filesize = 1024M
+            - pattern: max_execution_time = 30
+              replacement: max_execution_time = 600
+    - else:
+        replaceInFile:
+          nodeType: cp
+          path: /etc/php.ini
+          replacements:
+            - pattern: post_max_size = 100M
+              replacement: post_max_size = 1024M
+            - pattern: upload_max_filesize = 100M
+              replacement: upload_max_filesize = 1024M
+            - pattern: max_execution_time = 300
+              replacement: max_execution_time = 600
+            - pattern: ";extension=gd.so"
+              replacement: extension=gd.so
+            - pattern: ";extension=intl.so"
+              replacement: extension=intl.so
+            - pattern: cgi.fix_pathinfo=0
+              replacement: cgi.fix_pathinfo=1
+
+  restart:
+    - restartContainers:
+        nodeGroup: cp        
 
 success:
   email: /text/success-text.md
