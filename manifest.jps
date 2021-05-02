@@ -57,12 +57,28 @@ settings:
             tooltip: "If this option is activated, the storage node will be made as a clustered version" 
 
 onInstall:
+  - mount
   - deployApp
   - set-SQL-settings
   - set-PHP-settings
+  - apply-settings
+  - optimise-owncloud
   - restart
 
 actions:
+  mount:
+    - if ('${settings.clustered-storage}' == 'true'):
+      - log: Mount Storage if clustered storage
+      - api:
+        - method: jelastic.environment.file.AddMountPointByGroup
+          params:
+            nodeGroup: cp
+            sourceNodeId: ${nodes.storage.master.id}
+            sourcePath: /data/ROOT
+            path: /var/www/webroot/ROOT
+            sourceAddressType: NODE_GROUP
+            protocol: NFS4  
+
   deployApp:
     deploy:  
       archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
@@ -110,6 +126,28 @@ actions:
               replacement: extension=intl.so
             - pattern: cgi.fix_pathinfo=0
               replacement: cgi.fix_pathinfo=1
+            - pattern: ";extension=redis.so"  
+              replacement: extension=redis.so
+
+  apply-settings:
+    - restartContainers:
+        nodeGroup: cp
+    - sleep: 20000      
+    - cmd[cp]: curl -Lk ${env.domain}
+
+  optimise-owncloud:
+    - cmd[cp]: |-
+        REDIS="'\OC\Memcache\Redis'"
+        sed -i "36i     'filelocking.enabled' => true,"  /var/www/webroot/ROOT/config/config.php
+        sed -i "37i     'memcache.locking' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "38i     'memcache.local' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "39i     'redis' => ["  /var/www/webroot/ROOT/config/config.php
+        sed -i "40i     'host' => '/var/run/redis/redis.sock',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "41i     'port' => 0,"  /var/www/webroot/ROOT/config/config.php
+        sed -i "42i     ],"  /var/www/webroot/ROOT/config/config.php
+        cd /var/www/webroot/ROOT
+        ./occ system:cron
+        crontab -l | { cat; echo "*  *  *  *  * /usr/bin/php -f /var/www/webroot/ROOT/occ system:cron"; } | crontab -
 
   restart:
     - restartContainers:
