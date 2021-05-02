@@ -1,7 +1,7 @@
 type: install
 id: owncloud
 name: ownCloud
-baseUrl: https://raw.githubusercontent.com/panslothda/owncloud/master
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master
 homepage: https://owncloud.org/
 logo: images/ownCloud.png
 description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
