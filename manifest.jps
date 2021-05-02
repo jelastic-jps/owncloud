@@ -137,7 +137,6 @@ actions:
 
   optimise-owncloud:
     - cmd[cp]: |-
-        REDIS="'\OC\Memcache\Redis'"
         sed -i "36i     'filelocking.enabled' => true,"  /var/www/webroot/ROOT/config/config.php
         sed -i "37i     'memcache.locking' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
         sed -i "38i     'memcache.local' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
