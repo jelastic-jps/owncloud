@@ -1,5 +1,6 @@
 type: install
 id: owncloud
+version: 1.7
 name: ownCloud
 baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master
 homepage: https://owncloud.org/
