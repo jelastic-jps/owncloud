@@ -2,7 +2,10 @@ type: install
 id: owncloud
 version: 1.7
 name: ownCloud
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master/
+baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master
+homepage: https://owncloud.org/
+logo: images/ownCloud.png
+description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
 
 categories:
   - apps/file-management
@@ -12,58 +15,144 @@ categories:
 mixins:
   - configs/vers.yaml
 
-globals:
-  PASSWD: ${fn.password}
-homepage: https://owncloud.org/
-logo: images/ownCloud.png
-description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
+onBeforeInstall: /scripts/beforeinstall.js?_r=${fn.random}
 
-nodes:
-  - cloudlets: 8
-    nodeType: apache2
-    engine: php7.4
-  - cloudlets: 8
-    nodeType: mysql5
+skipNodeEmails: true
+nodes: definedInOnBeforeInstall
+
+settings:
+  fields:
+    - name: litespeed
+      type: checkbox
+      caption: Install LiteSpeed High-Performance Web Server 
+      value: true
+      tooltip: "If this option is disabled, the service will be installed using Apache application server"
+    - pack: ''
+      align: ''
+      defaultPadding: 1
+      defaultFlex: 0
+      caption: Compositefield
+      type: compositefield
+      name: compositefield
+      hideLabel: true
+      hidden: false
+    - name: ded-storage
+      type: checkbox
+      caption: Add a dedicated storage Node
+      value: true
+      tooltip: "If this option is disabled, the storage of the Apache node will be used for all files"
+      showIf:
+        true:
+          - caption: Clustered storage for high availability and more storage
+            type: checkbox
+            name: clustered-storage
+            value: false
+            tooltip: "If this option is activated, the storage node will be made as a clustered version"
+
+        false:
+          - caption: Clustered storage for high availability and more storage
+            type: checkbox
+            name: clustered-storage
+            value: false
+            disabled: true
+            tooltip: "If this option is activated, the storage node will be made as a clustered version" 
+
 onInstall:
-  - deploy:
+  - mount
+  - deployApp
+  - set-SQL-settings
+  - set-PHP-settings
+  - apply-settings
+  - optimise-owncloud
+  - restart
+
+actions:
+  mount:
+    - if ('${settings.clustered-storage}' == 'true'):
+      - log: Mount Storage if clustered storage
+      - api:
+        - method: jelastic.environment.file.AddMountPointByGroup
+          params:
+            nodeGroup: cp
+            sourceNodeId: ${nodes.storage.master.id}
+            sourcePath: /data/ROOT
+            path: /var/www/webroot/ROOT
+            sourceAddressType: NODE_GROUP
+            protocol: NFS4  
+
+  deployApp:
+    deploy:  
       archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
-  - prepareSqlDatabase:
-    - nodeType: mysql5
-      loginCredentials:
-        user: root
-        password: ${nodes.mysql5.password}
-      newDatabaseName: owncloud
-      newDatabaseUser:
-        name: owncloud
-        password: ${globals.PASSWD}
-  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql5.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
-  - replaceInFile:
-    - path: /etc/php.ini
-      nodeType: apache2
-      replacements:
-      - replacement: post_max_size = 256M
-        pattern: post_max_size = 8M
-      - replacement: upload_max_filesize = 256M
-        pattern: upload_max_filesize = 2M
-      - replacement: max_execution_time = 300
-        pattern: max_execution_time = 30
-      - pattern: ";extension=gd.so"
-        replacement: extension=gd.so
-      - pattern: ";extension=intl.so"
-        replacement: extension=intl.so
-      - pattern: cgi.fix_pathinfo=0
-        replacement: cgi.fix_pathinfo=1
-  - restartNode:
-      nodeType: apache2
 
-success: |
-  Below you will find your admin panel link, username and password.  
-  
-  
-  Admin panel URL: [${env.protocol}://${env.domain}/](${env.protocol}://${env.domain}/)  
-  Admin name: admin  
-  Password: ${user.appPassword}  
-  
-  To add custom domain name for your ownCloud installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains)
+  set-SQL-settings:
+    - prepareSqlDatabase:
+        - nodeType: sqldb
+          loginCredentials:
+            user: root
+            password: "${nodes.sqldb.password}"
+          newDatabaseName: owncloud
+          newDatabaseUser:
+            name: owncloud
+            password: "${user.appPassword}"
+
+  set-PHP-settings:        
+    - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${user.appPassword}",\n		"dbhost"	=> "${nodes.sqldb.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
+    - if ('${settings.litespeed}' == 'true'):
+        replaceInFile:
+          nodeType: cp
+          path: /usr/local/lsws/lsphp/etc/php.ini
+          replacements:
+            - pattern: post_max_size = 8M
+              replacement: post_max_size = 1024M
+            - pattern: upload_max_filesize = 2M
+              replacement: upload_max_filesize = 1024M
+            - pattern: max_execution_time = 30
+              replacement: max_execution_time = 600
+    - else:
+        replaceInFile:
+          nodeType: cp
+          path: /etc/php.ini
+          replacements:
+            - pattern: post_max_size = 100M
+              replacement: post_max_size = 1024M
+            - pattern: upload_max_filesize = 100M
+              replacement: upload_max_filesize = 1024M
+            - pattern: max_execution_time = 300
+              replacement: max_execution_time = 600
+            - pattern: ";extension=gd.so"
+              replacement: extension=gd.so
+            - pattern: ";extension=intl.so"
+              replacement: extension=intl.so
+            - pattern: cgi.fix_pathinfo=0
+              replacement: cgi.fix_pathinfo=1
+            - pattern: ";extension=redis.so"  
+              replacement: extension=redis.so
+
+  apply-settings:
+    - restartContainers:
+        nodeGroup: cp
+    - sleep: 20000      
+    - cmd[cp]: curl -Lk ${env.domain}
+
+  optimise-owncloud:
+    - cmd[cp]: |-
+        sed -i "36i     'filelocking.enabled' => true,"  /var/www/webroot/ROOT/config/config.php
+        sed -i "37i     'memcache.locking' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "38i     'memcache.local' => '\\\OC\\\Memcache\\\Redis',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "39i     'redis' => ["  /var/www/webroot/ROOT/config/config.php
+        sed -i "40i     'host' => '/var/run/redis/redis.sock',"  /var/www/webroot/ROOT/config/config.php
+        sed -i "41i     'port' => 0,"  /var/www/webroot/ROOT/config/config.php
+        sed -i "42i     ],"  /var/www/webroot/ROOT/config/config.php
+        cd /var/www/webroot/ROOT
+        ./occ system:cron
+        crontab -l | { cat; echo "*  *  *  *  * /usr/bin/php -f /var/www/webroot/ROOT/occ system:cron"; } | crontab -
+
+  restart:
+    - restartContainers:
+        nodeGroup: cp        
+
+success:
+  email: /text/success-text.md
+  text: /text/success-text.md

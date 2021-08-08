@@ -1,7 +1,9 @@
 [![ownCloud](../../raw/master/images/ownCloud.png)](../../../owncloud)
 ## ownCloud
 
-The JPS package deploys ownCloud that initially contains 1 application server and 1 database container. The package provides vertical scalling per node and horizontal scaling for each layer out-of-the-box.
+The JPS package deploys ownCloud that initially contains 1 application server and 1 database container. 
+
+You also have the choice of using a dedicated storage node or a clustered storage node.
 
 ### Highlights
 This package is designed to deploy ownCloud environment which represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
@@ -14,16 +16,16 @@ This package is designed to deploy ownCloud environment which represents an open
 
 Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
 -------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
-AS                   | Apache 2 (MOD_PHP) |       1                        |           1 / 16                          | -
-DB                   |    MySQL      |       1                        |           1 / 16                           | -
+AS                   | Apache 2 <br/> Litespeed |       1                        |           1 / 16                          | -
+DB                   |    MariaDB      |       1                        |           1 / 8                           | -
 
 * AS - Application server 
 * DB - Database 
 * CT - Container
 
-**ownCloud Version**: 8.1.1<br/>
-**PHP Engine**: PHP 5.5.36<br/>
-**MySQL Database**: 5.7.12
+**ownCloud Version**: 10.7<br/>
+**PHP Engine**: PHP 7.4.15<br/>
+**MariaDB Database**: 10.x
 
 ### Deployment
 
