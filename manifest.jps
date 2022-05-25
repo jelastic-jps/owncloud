@@ -18,10 +18,10 @@ homepage: https://owncloud.org/
 logo: images/ownCloud.png
 description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
 
-engine: php7.3
 nodes:
   - cloudlets: 8
     nodeType: apache2
+    engine: php7.4
   - cloudlets: 8
     nodeType: mysql5
 onInstall:
@@ -29,15 +29,10 @@ onInstall:
       archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
-  - prepareSqlDatabase:
-    - nodeType: mysql5
-      loginCredentials:
-        user: root
-        password: ${nodes.mysql5.password}
-      newDatabaseName: owncloud
-      newDatabaseUser:
-        name: owncloud
-        password: ${globals.PASSWD}
+  - cmd[sqldb]: |-
+      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "CREATE DATABASE owncloud;"
+      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "CREATE USER 'owncloud'@'%' IDENTIFIED BY '${globals.PASSWD}';"
+      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "GRANT ALL PRIVILEGES ON owncloud.* To 'owncloud'@'%' IDENTIFIED BY '${globals.PASSWD}';"
   - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql5.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
   - replaceInFile:
     - path: /etc/php.ini
