@@ -26,7 +26,7 @@ nodes:
     nodeType: mysql5
 onInstall:
   - deploy:
-      archive: https://download.owncloud.org/community/owncloud-${globals.version_owncloud}.zip
+      archive: https://download.owncloud.com/server/stable/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
   - cmd[sqldb]: |-
