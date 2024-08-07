@@ -21,9 +21,9 @@ DB                   |    MySQL      |       1                        |         
 * DB - Database 
 * CT - Container
 
-**ownCloud Version**: 8.1.1<br/>
-**PHP Engine**: PHP 5.5.36<br/>
-**MySQL Database**: 5.7.12
+**ownCloud Version**: 10.15.0<br/>
+**PHP Engine**: PHP 7.4<br/>
+**MySQL Database**: 8.0
 
 ### Deployment
 
