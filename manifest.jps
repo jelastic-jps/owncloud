@@ -23,17 +23,17 @@ nodes:
     nodeType: apache2
     engine: php7.4
   - cloudlets: 8
-    nodeType: mysql5
+    nodeType: mysql8
 onInstall:
   - deploy:
       archive: https://download.owncloud.com/server/stable/owncloud-${globals.version_owncloud}.zip
       name: owncloud-${globals.version_owncloud}.zip
       context: ROOT
   - cmd[sqldb]: |-
-      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "CREATE DATABASE owncloud;"
-      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "CREATE USER 'owncloud'@'%' IDENTIFIED BY '${globals.PASSWD}';"
-      MYSQL_PWD=${nodes.mysql5.password} mysql -uroot -e "GRANT ALL PRIVILEGES ON owncloud.* To 'owncloud'@'%' IDENTIFIED BY '${globals.PASSWD}';"
-  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql5.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
+      MYSQL_PWD=${nodes.mysql8.password} mysql -uroot -e "CREATE DATABASE owncloud;"
+      MYSQL_PWD=${nodes.mysql8.password} mysql -uroot -e "CREATE USER 'owncloud'@'%' IDENTIFIED BY '${globals.PASSWD}';"
+      MYSQL_PWD=${nodes.mysql8.password} mysql -uroot -e "GRANT ALL PRIVILEGES ON owncloud.* TO 'owncloud'@'%' WITH GRANT OPTION;"
+  - cmd [cp]: printf '<?php\n	$AUTOCONFIG = array(\n		"dbtype"	=> "mysql",\n		"dbname"	=> "owncloud",\n		"dbuser"	=> "owncloud",\n		"dbpass"	=> "${globals.PASSWD}",\n		"dbhost"	=> "${nodes.mysql8.address}",\n		"dbtableprefix" => "oc_",\n		"adminlogin"	=> "admin",\n		"adminpass"	=> "${user.appPassword}",\n		"directory"	=> "/var/www/webroot/ROOT/data",\n);' > /var/www/webroot/ROOT/config/autoconfig.php
   - replaceInFile:
     - path: /etc/php.ini
       nodeType: apache2
