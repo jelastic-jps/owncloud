@@ -4,12 +4,12 @@
 
 # ownCloud
 
-The application package deploys the ownCloud cloud storage solution - a free open-source software project for content collaboration, sharing, and file synchronization.
+The application package deploys the ownCloud cloud storage solution - a free, open-source software project for content collaboration, sharing, and file synchronization.
 
 
 ## Environment Topology
 
-The package creates a new ownCloud environment that consists of one application server and one database container, deploys the ownCloud application, and configures automatic vertical (per container) and horizontal scaling (for both layers) out-of-the-box. The default software stacks utilized in the package are the following:
+The package creates a new ownCloud environment that consists of one application server and one database container. It deploys and sets the ownCloud application. Additionally, the automatic vertical (per container) and horizontal scaling are configured out of the box. The default software stacks utilized in the package are the following:
 
 - Apache 2 PHP application server (PHP 7.4)
 - MySQL 8 database
