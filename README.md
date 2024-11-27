@@ -9,7 +9,7 @@ The application package deploys the ownCloud cloud storage solution - a free, op
 
 ## Environment Topology
 
-The package creates a new ownCloud environment that consists of one application server and one database container. It deploys and sets the ownCloud application. Additionally, the automatic vertical (per container) and horizontal scaling are configured out of the box. The default software stacks utilized in the package are the following:
+The package creates a new ownCloud environment that consists of one application server and one database container. It deploys and sets the ownCloud application. The automatic vertical scaling is enabled out of the box, and [horizontal scaling](https://www.virtuozzo.com/application-platform-docs/automatic-horizontal-scaling/) can be configured (if needed). The default software stacks utilized in the package are the following:
 
 - Apache 2 PHP application server (PHP 7.4)
 - MySQL 8 database
