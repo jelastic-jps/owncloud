@@ -4,7 +4,7 @@
 
 # ownCloud
 
-The application package deploys the ownCloud cloud storage solution - a free, open-source software project for content collaboration, sharing, and file synchronization.
+The application package deploys the [ownCloud](https://owncloud.com/) solution - an open-source cloud storage project for content collaboration, sharing, and file synchronization.
 
 
 ## Environment Topology
