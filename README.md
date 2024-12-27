@@ -15,8 +15,6 @@ The package creates a new ownCloud environment that consists of one application 
 - MySQL 8 database
 - OwnCloud 10.15.0
 
-![owncloud-environment-topology](images/owncloud-environment-topology.png)
-
 
 ## Deployment to Cloud
 
