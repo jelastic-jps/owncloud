@@ -1,36 +1,34 @@
-[![ownCloud](../../raw/master/images/ownCloud.png)](../../../owncloud)
-## ownCloud
+<p align="center"> 
+<img src="images/ownCloud.png" alt="ownCloud">
+</p>
 
-The JPS package deploys ownCloud that initially contains 1 application server and 1 database container. The package provides vertical scalling per node and horizontal scaling for each layer out-of-the-box.
+# ownCloud
 
-### Highlights
-This package is designed to deploy ownCloud environment which represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
+The application package deploys the [ownCloud](https://owncloud.com/) solution - an open-source cloud storage project for content collaboration, sharing, and file synchronization.
 
-### Environment Topology
 
-![owncloud-environment-topology](images/owncloud-environment-topology.png)
+## Environment Topology
 
-### Specifics
+The package creates a new ownCloud environment that consists of one application server and one database container. It deploys and sets the ownCloud application. The automatic vertical scaling is enabled out of the box, and [horizontal scaling](https://www.virtuozzo.com/application-platform-docs/automatic-horizontal-scaling/) can be configured (if needed). The default software stacks utilized in the package are the following:
 
-Layer                |     Server    | Number of CTs <br/> by default | Cloudlets per CT <br/> (reserved/dynamic) | Options
--------------------- | --------------| :----------------------------: | :---------------------------------------: | :-----:
-AS                   | Apache 2 (MOD_PHP) |       1                        |           1 / 16                          | -
-DB                   |    MySQL      |       1                        |           1 / 16                           | -
+- Apache 2 PHP application server (PHP 7.4)
+- MySQL 8 database
+- OwnCloud 10.15.0
 
-* AS - Application server 
-* DB - Database 
-* CT - Container
 
-**ownCloud Version**: 10.15.0<br/>
-**PHP Engine**: PHP 7.4<br/>
-**MySQL Database**: 8.0
+## Deployment to Cloud
 
-### Deployment
+To get your ownCloud solution, click the "**Deploy to Cloud**" button below, specify your email address within the widget, choose one of the [Virtuozzo Public Cloud Providers](https://www.virtuozzo.com/application-platform-partners/), and confirm by clicking **Install**.
 
-In order to get this solution instantly deployed, click the "Get It Hosted Now" button, specify your email address within the widget, choose one of the [Jelastic Public Cloud providers](https://jelastic.cloud) and press Install.
+[![Deploy to Cloud](https://raw.githubusercontent.com/jelastic-jps/common/main/images/deploy-to-cloud.png)](https://www.virtuozzo.com/install/?manifest=https://raw.githubusercontent.com/jelastic-jps/owncloud/refs/heads/master/manifest.jps)
 
-[![GET IT HOSTED](https://raw.githubusercontent.com/jelastic-jps/jpswiki/master/images/getithosted.png)](https://jelastic.com/install-application/?manifest=https%3A%2F%2Fgithub.com%2Fjelastic-jps%2Fowncloud%2Fraw%2Fmaster%2Fmanifest.jps)
+> If you already have a Virtuozzo Application Platform (VAP) account, you can deploy this solution from the [Marketplace](https://www.virtuozzo.com/application-platform-docs/marketplace/) or [import](https://www.virtuozzo.com/application-platform-docs/environment-import/) a manifest file from this repository.
 
-To deploy this package to Jelastic Private Cloud, import [this JPS manifest](../../raw/master/manifest.jps) within your dashboard ([detailed instruction](https://docs.jelastic.com/environment-export-import#import)).
 
-More information about Jelastic JPS package and about installation widget for your website can be found in the [Jelastic JPS Application Package](https://github.com/jelastic-jps/jpswiki/wiki/Jelastic-JPS-Application-Package) reference.
+## Installation Process
+
+In the opened installation window at the VAP dashboard, provide a preferred environment and display names, choose a region (if available), and confirm the installation.
+
+![ownCloud deployment wizard](images/owncloud-deployment-wizard.png)
+
+Your ownCloud application will be automatically installed in a few minutes.

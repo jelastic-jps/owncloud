@@ -14,9 +14,9 @@ mixins:
 
 globals:
   PASSWD: ${fn.password}
-homepage: https://owncloud.org/
+homepage: https://owncloud.com/
 logo: images/ownCloud.png
-description: ownCloud represents an open source and free file cloud storage. It can be easily used for data sharing and synchronization, as well as just for storing documents.
+description: ownCloud represents an open-source file cloud storage. It can be used for simple document storing, as well as implement data sharing and synchronization.
 
 nodes:
   - cloudlets: 8
@@ -54,11 +54,10 @@ onInstall:
       nodeType: apache2
 
 success: |
-  Below you will find your admin panel link, username and password.  
+  Use the following credentials to access the ownCloud admin panel:
   
+  **Admin panel URL:** [${env.protocol}://${env.domain}/](${env.protocol}://${env.domain}/)  
+  **Admin name:** admin  
+  **Admin password:** ${user.appPassword}  
   
-  Admin panel URL: [${env.protocol}://${env.domain}/](${env.protocol}://${env.domain}/)  
-  Admin name: admin  
-  Password: ${user.appPassword}  
-  
-  To add custom domain name for your ownCloud installation follow the steps described in our [documentation](http://docs.jelastic.com/custom-domains)
+  To add a custom domain name for your ownCloud installation, follow the steps described in our [documentation](https://www.virtuozzo.com/application-platform-docs/custom-domains/).
