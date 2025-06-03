@@ -2,7 +2,7 @@ type: install
 id: owncloud
 version: 1.7
 name: ownCloud
-baseUrl: https://raw.githubusercontent.com/jelastic-jps/owncloud/master/
+baseUrl: https://cdn.jsdelivr.net/gh/jelastic-jps/owncloud@master/
 
 categories:
   - apps/file-management
